@@ -1,0 +1,6 @@
+{% if user.is_authenticated %}
+	<p class="top-menu">Hi {{ user.username }} <small>(<a href="{% url 'logout' %}">Logout</a>)</small></p>
+{% else %}
+	<p class="top-menu"> Login or register. 
+	<small>(<a href="{% url 'login' %}">Login</a>) (<a href="{% url 'register' %}">Register</a>)</small></p>
+{% endif %}
