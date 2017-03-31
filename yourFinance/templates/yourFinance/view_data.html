@@ -1,0 +1,12 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
+	{% for stash in stashes %}
+		<div class="stash">
+			{{stash.date}}<br>
+			{{stash.name}}<br>
+			{{stash.amount}}<br>
+			<br>
+		</div>
+	{% endfor %}
+	<button type="button"><a href="/">Back to main page.</a></button>
+{% endblock content %}

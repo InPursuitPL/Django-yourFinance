@@ -1,6 +1,31 @@
-{% if user.is_authenticated %}
-	<p class="top-menu">Hi {{ user.username }} <small>(<a href="{% url 'logout' %}">Logout</a>)</small></p>
-{% else %}
-	<p class="top-menu"> Login or register. 
-	<small>(<a href="{% url 'login' %}">Login</a>) (<a href="{% url 'register' %}">Register</a>)</small></p>
-{% endif %}
+{% extends 'yourFinance/base.html' %}
+{% block content %}
+<p>Welcome in yourFinance program.</p>
+<p>This program helps you to manage your budget.
+    It saves budget data as separate money deposition places
+    for certain month and certain year. You can check detailed
+    data as well as analyze certain month to see the values
+    and other information.</p>
+<p>What would you like to do:</p>
+<ul>
+	<li><a href="/add_data">Add new data</a></li>
+	<li>View data:</li>
+	<ul>
+		<li><a href="/view_all_data">For the whole time</a></li>
+		<li>For certain year</li>
+		<li>For certain month</li>
+	</ul>
+	<li>Analyze data:</li>
+	<ul>
+		<li>Analyze last month</li>
+		<li>Analyze chosen month</li>
+	</ul>
+	<li>Configure settings:</li>
+	<ul>
+		<li>Configure names of money deposition places</li>
+		<li>Configure monthly costs names and amounts</li>
+		<li>Configure current costs groups</li>
+	</ul>
+	<li>Exit</li>
+</ul>
+{% endblock content %}

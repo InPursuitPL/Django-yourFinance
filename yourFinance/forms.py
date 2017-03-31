@@ -3,6 +3,12 @@ import re
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from .models import Stash
+
+class StashForm(forms.ModelForm):
+    class Meta:
+        model = Stash
+        fields = ('name', 'date', 'amount')
 
 
 class RegistrationForm(forms.Form):
@@ -31,3 +37,5 @@ alphanumeric characters and the underscore.')
         except ObjectDoesNotExist:
             return username
         raise forms.ValidationError('Username is already taken.', code='invalid')
+
+
