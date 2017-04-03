@@ -8,10 +8,11 @@ from .models import Stash
 from .forms import RegistrationForm, StashForm, DateForm
 
 
-def make_choices_list(elementName, choicesTuple):
+def make_initial_list(elementName, choicesTuple, secondElementName, date):
 	list = []
 	for i, elem in enumerate(choicesTuple):
-		list.append({elementName:  choicesTuple[i][0]})
+		list.append({elementName:  choicesTuple[i][0],
+                     secondElementName: date})
 	return list
 
 
@@ -38,30 +39,28 @@ def set_date(request):
     if request.method == 'POST':
         form = DateForm(request.POST)
         if form.is_valid():
-            return redirect('show date', date=form.cleaned_data['date'])
+            return redirect('add data', date=form.cleaned_data['date'])
         else:
             return render(request, 'yourFinance/set_date.html', {'form': form})
     form = DateForm()
     return render(request, 'yourFinance/set_date.html', {'form': form})
 
 @login_required
-def show_date(request, date):
-    return HttpResponse(date)
-
-@login_required
-def add_data(request):
+def add_data(request, date):
     StashFormSet = modelformset_factory(Stash, form=StashForm, extra=4)
     if request.method == 'POST':
         formset = StashFormSet(request.POST)
         if formset.is_valid():
-            stash = formset.save(commit=False)
-            stash.user = request.user
-            stash.save()
+            stashList = formset.save(commit=False)
+            for stash in stashList:
+                stash.user = request.user
+                stash.save()
             return render(request, 'yourFinance/success.html')
         else:
             return render(request, 'yourFinance/add_data.html', {'formset': formset})
     formset = StashFormSet(queryset=Stash.objects.none(),
-                           initial=make_choices_list('name', Stash.NAME_CHOICES))
+                           initial=make_initial_list('name', Stash.NAME_CHOICES,
+                                                     'date', date))
     return render(request, 'yourFinance/add_data.html', {'formset': formset})
 
 @login_required
