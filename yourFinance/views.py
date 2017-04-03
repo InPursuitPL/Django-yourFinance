@@ -6,9 +6,10 @@ from django.forms import modelformset_factory
 from .models import Stash
 from .forms import RegistrationForm, StashForm
 
+
 def make_choices_list(elementName, choicesTuple):
 	list = []
-	for i in range(len(choicesTuple)):
+	for i, elem in enumerate(choicesTuple):
 		list.append({elementName:  choicesTuple[i][0]})
 	return list
 
