@@ -5,6 +5,11 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Stash
 
+
+class DateForm(forms.Form):
+    date = forms.DateField()
+
+
 class StashForm(forms.ModelForm):
     class Meta:
         model = Stash

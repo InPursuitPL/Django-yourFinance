@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 
 from .models import Stash
-from .forms import RegistrationForm, StashForm
+from .forms import RegistrationForm, StashForm, DateForm
 
 
 def make_choices_list(elementName, choicesTuple):
@@ -33,6 +34,21 @@ def register_page(request):
     return render(request, 'registration/register.html', {'form': form})
 
 @login_required
+def set_date(request):
+    if request.method == 'POST':
+        form = DateForm(request.POST)
+        if form.is_valid():
+            return redirect('show date', date=form.cleaned_data['date'])
+        else:
+            return render(request, 'yourFinance/set_date.html', {'form': form})
+    form = DateForm()
+    return render(request, 'yourFinance/set_date.html', {'form': form})
+
+@login_required
+def show_date(request, date):
+    return HttpResponse(date)
+
+@login_required
 def add_data(request):
     StashFormSet = modelformset_factory(Stash, form=StashForm, extra=4)
     if request.method == 'POST':
@@ -42,7 +58,6 @@ def add_data(request):
             stash.user = request.user
             stash.save()
             return render(request, 'yourFinance/success.html')
-
         else:
             return render(request, 'yourFinance/add_data.html', {'formset': formset})
     formset = StashFormSet(queryset=Stash.objects.none(),
