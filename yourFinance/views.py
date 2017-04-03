@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -8,11 +7,10 @@ from .models import Stash
 from .forms import RegistrationForm, StashForm, DateForm
 
 
-def make_initial_list(elementName, choicesTuple, secondElementName, date):
+def make_initial_list(elementName, choicesTuple):
 	list = []
 	for i, elem in enumerate(choicesTuple):
-		list.append({elementName:  choicesTuple[i][0],
-                     secondElementName: date})
+		list.append({elementName:  choicesTuple[i][0]})
 	return list
 
 
@@ -51,17 +49,23 @@ def add_data(request, date):
     if request.method == 'POST':
         formset = StashFormSet(request.POST)
         if formset.is_valid():
+            #TODO: there might be a better way to save objects here,
+            #TODO: search in doc.
             stashList = formset.save(commit=False)
             for stash in stashList:
                 stash.user = request.user
+                stash.date = date
                 stash.save()
             return render(request, 'yourFinance/success.html')
         else:
-            return render(request, 'yourFinance/add_data.html', {'formset': formset})
+            return render(request, 'yourFinance/add_data.html',
+                          {'formset': formset,
+                           'date': date})
     formset = StashFormSet(queryset=Stash.objects.none(),
-                           initial=make_initial_list('name', Stash.NAME_CHOICES,
-                                                     'date', date))
-    return render(request, 'yourFinance/add_data.html', {'formset': formset})
+                           initial=make_initial_list('name', Stash.NAME_CHOICES))
+    return render(request, 'yourFinance/add_data.html',
+                  {'formset': formset,
+                   'date': date})
 
 @login_required
 def view_all_data(request):

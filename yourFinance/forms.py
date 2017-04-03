@@ -13,7 +13,7 @@ class DateForm(forms.Form):
 class StashForm(forms.ModelForm):
     class Meta:
         model = Stash
-        fields = ('name', 'date', 'amount')
+        fields = ('name', 'amount')
 
 
 class RegistrationForm(forms.Form):
