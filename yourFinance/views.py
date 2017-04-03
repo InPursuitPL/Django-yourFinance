@@ -32,40 +32,30 @@ def register_page(request):
     form = RegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-@login_required
-def set_date(request):
-    if request.method == 'POST':
-        form = DateForm(request.POST)
-        if form.is_valid():
-            return redirect('add data', date=form.cleaned_data['date'])
-        else:
-            return render(request, 'yourFinance/set_date.html', {'form': form})
-    form = DateForm()
-    return render(request, 'yourFinance/set_date.html', {'form': form})
 
 @login_required
-def add_data(request, date):
+def add_data(request):
     StashFormSet = modelformset_factory(Stash, form=StashForm, extra=4)
     if request.method == 'POST':
+        form = DateForm(request.POST)
         formset = StashFormSet(request.POST)
-        if formset.is_valid():
+        if form.is_valid() and formset.is_valid():
             #TODO: there might be a better way to save objects here,
             #TODO: search in doc.
             stashList = formset.save(commit=False)
             for stash in stashList:
                 stash.user = request.user
-                stash.date = date
+                stash.date = form.cleaned_data['date']
                 stash.save()
             return render(request, 'yourFinance/success.html')
         else:
             return render(request, 'yourFinance/add_data.html',
-                          {'formset': formset,
-                           'date': date})
+                          {'form': form, 'formset': formset})
+    form = DateForm()
     formset = StashFormSet(queryset=Stash.objects.none(),
                            initial=make_initial_list('name', Stash.NAME_CHOICES))
     return render(request, 'yourFinance/add_data.html',
-                  {'formset': formset,
-                   'date': date})
+                  {'form': form, 'formset': formset})
 
 @login_required
 def view_all_data(request):

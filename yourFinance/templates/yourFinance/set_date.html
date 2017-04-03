@@ -1,9 +1,0 @@
-{% extends 'yourFinance/base.html' %}
-{% block content %}
-<p>Please provide date for which you would like to add data. Required format: yyy-mm-dd</p>
-<form method="post" action=".">
-	{% csrf_token %}
-	{{ form }}
-	<input type="submit" value="Proceed" />
-</form>
-{% endblock content %}

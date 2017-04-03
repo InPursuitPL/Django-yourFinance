@@ -1,8 +1,8 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-<p>Set amounts for date {{date }}.</p>
 <form method="post" action=".">
 	{% csrf_token %}
+	{{ form }}
 	<table>
 		{{ formset }}
 	</table>
