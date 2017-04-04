@@ -1,5 +1,6 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
+<p>Date should be in format yyyy-mm-dd</p>
 <form method="post" action=".">
 	{% csrf_token %}
 	{{ form }}

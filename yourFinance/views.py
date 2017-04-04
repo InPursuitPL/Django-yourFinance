@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 
 from .models import Stash
-from .forms import RegistrationForm, StashForm, DateForm
+from .forms import RegistrationForm, StashForm, DateForm, PeriodForm
 
 
 def make_initial_list(elementName, choicesTuple):
@@ -59,3 +59,45 @@ def add_data(request):
 def view_all_data(request):
     stashes = Stash.objects.filter(user=request.user).order_by('date')
     return render(request, 'yourFinance/view_data.html', {'stashes': stashes})
+
+@login_required
+def view_certain_data(request):
+    templateText = 'Provie start and end date to view data in certain period of time.'
+    if request.method == 'POST':
+        form = PeriodForm(request.POST)
+        if form.is_valid():
+            stashes = Stash.objects.filter(
+                user=request.user,
+                date__range=(form.cleaned_data['startDate'],
+                             form.cleaned_data['endDate'])
+            ).order_by('date')
+            return render(request, 'yourFinance/view_data.html', {'stashes': stashes})
+        else:
+            return render(request, 'yourFinance/choose_time.html',
+                          {'form': form, 'templateText': templateText, 'buttonName': 'Show'})
+    form = PeriodForm()
+    return render(request, 'yourFinance/choose_time.html',
+                  {'form': form, 'templateText': templateText, 'buttonName': 'Show'})
+
+@login_required
+def delete_data(request):
+    templateText = 'Warning! Data from certain period of time will be deleted!'
+    if request.method == 'POST':
+        form = PeriodForm(request.POST)
+        if form.is_valid():
+            stashes = Stash.objects.filter(
+                user=request.user,
+                date__range=(form.cleaned_data['startDate'],
+                             form.cleaned_data['endDate'])
+            ).order_by('date')
+            stashesAmount = len(stashes)
+            for stash in stashes:
+                stash.delete()
+            templateText = '{} entries were deleted.'.format(stashesAmount)
+            return render(request, 'yourFinance/success.html', {'templateText': templateText,})
+        else:
+            return render(request, 'yourFinance/choose_time.html',
+                          {'form': form, 'templateText': templateText, 'buttonName': 'Delete'})
+    form = PeriodForm()
+    return render(request, 'yourFinance/choose_time.html',
+                  {'form': form, 'templateText': templateText, 'buttonName': 'Delete'})

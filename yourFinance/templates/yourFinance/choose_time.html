@@ -1,0 +1,10 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
+	{{ templateText }}
+	<p>Dates should be in format yyyy-mm-dd</p>
+	<form method="post" action=".">
+	{% csrf_token %}
+	{{ form }}
+	<input type="submit" value={{ buttonName }} />
+</form>
+{% endblock content %}

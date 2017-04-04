@@ -6,6 +6,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Stash
 
 
+class PeriodForm(forms.Form):
+    startDate = forms.DateField(label='Start date')
+    endDate = forms.DateField(label='End date')
+
 class DateForm(forms.Form):
     date = forms.DateField()
 

@@ -6,4 +6,6 @@ urlpatterns = [
     url(r'^accounts/register/$', views.register_page, name='register'),
     url(r'^add_data/$', views.add_data, name='add data'),
     url(r'^view_all_data/$', views.view_all_data, name = 'view all data'),
+    url(r'^view_certain_data/$', views.view_certain_data, name='view certain data'),
+    url(r'^delete_data/$', views.delete_data, name='delete data'),
 ]
