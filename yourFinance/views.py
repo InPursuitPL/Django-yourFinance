@@ -40,8 +40,6 @@ def add_data(request):
         form = DateForm(request.POST)
         formset = StashFormSet(request.POST)
         if form.is_valid() and formset.is_valid():
-            #TODO: there might be a better way to save objects here,
-            #TODO: search in doc.
             stashList = formset.save(commit=False)
             for stash in stashList:
                 stash.user = request.user
