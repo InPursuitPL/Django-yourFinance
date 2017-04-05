@@ -1,0 +1,7 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
+<form method="post">{% csrf_token %}
+    Are you sure you want to delete data?
+    <input type="submit" value="Submit" />
+</form>
+{% endblock content %}

@@ -19,6 +19,11 @@ class StashForm(forms.ModelForm):
         model = Stash
         fields = ('name', 'amount')
 
+class StashFullForm(forms.ModelForm):
+    class Meta:
+        model = Stash
+        fields = ('date', 'name', 'amount')
+
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(label='User name', max_length=30)

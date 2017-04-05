@@ -2,9 +2,9 @@
 {% block content %}
 	{% for stash in stashes %}
 		<div class="stash">
-			{{stash.date}}
-			{{stash.name}}
-			{{stash.amount}}
+			{{stash.date}} {{stash.name}} {{stash.amount}} 
+			<a href="{% url 'data edit' stash.id %}">edit</a>
+			<a href="{% url 'data delete' stash.id %}">delete</a>
 			<br>
 		</div>
 	{% endfor %}

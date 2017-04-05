@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 
 from .models import Stash
-from .forms import RegistrationForm, StashForm, DateForm, PeriodForm
+from .forms import RegistrationForm, StashForm, StashFullForm, DateForm, PeriodForm
 
 
 def make_initial_list(elementName, choicesTuple):
@@ -78,6 +78,23 @@ def view_certain_data(request):
     form = PeriodForm()
     return render(request, 'yourFinance/choose_time.html',
                   {'form': form, 'templateText': templateText, 'buttonName': 'Show'})
+
+@login_required
+def data_edit(request, pk):
+    stash = get_object_or_404(Stash, pk=pk)
+    form = StashFullForm(request.POST or None, instance=stash)
+    if form.is_valid():
+        form.save()
+        return render(request, 'yourFinance/success.html')
+    return render(request, 'yourFinance/data_form.html', {'form': form})
+
+@login_required
+def data_delete(request, pk):
+    stash = get_object_or_404(Stash, pk=pk)
+    if request.method == 'POST':
+        stash.delete()
+        return render(request, 'yourFinance/success.html')
+    return render(request, 'yourFinance/confirm_delete.html')
 
 @login_required
 def delete_data(request):
