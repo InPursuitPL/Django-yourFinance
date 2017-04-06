@@ -56,21 +56,20 @@ def add_data(request):
                   {'form': form, 'formset': formset})
 
 @login_required
-def view_all_data(request):
-    stashes = Stash.objects.filter(user=request.user).order_by('date')
-    return render(request, 'yourFinance/view_data.html', {'stashes': stashes})
-
-@login_required
-def view_certain_data(request):
-    templateText = 'Provide start and end date to view data in certain period of time.'
+def view_data(request):
+    templateText = "Provide start and end date to view data in certain period of time." \
+                   " Press 'submit' button without given dates to view all data."
     if request.method == 'POST':
         form = PeriodForm(request.POST)
         if form.is_valid():
-            stashes = Stash.objects.filter(
-                user=request.user,
-                date__range=(form.cleaned_data['startDate'],
-                             form.cleaned_data['endDate'])
-            ).order_by('date')
+            if not form.has_changed():
+                stashes = Stash.objects.filter(user=request.user).order_by('date')
+            else:
+                stashes = Stash.objects.filter(
+                    user=request.user,
+                    date__range=(form.cleaned_data['startDate'],
+                                form.cleaned_data['endDate'])
+                ).order_by('date')
             return render(request, 'yourFinance/view_data.html', {'stashes': stashes})
         else:
             return render(request, 'yourFinance/choose_time.html',

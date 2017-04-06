@@ -7,8 +7,8 @@ from .models import Stash
 
 
 class PeriodForm(forms.Form):
-    startDate = forms.DateField(label='Start date')
-    endDate = forms.DateField(label='End date')
+    startDate = forms.DateField(label='Start date', required=False)
+    endDate = forms.DateField(label='End date', required=False)
 
 class DateForm(forms.Form):
     date = forms.DateField()
