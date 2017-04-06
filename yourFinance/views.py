@@ -62,7 +62,7 @@ def view_all_data(request):
 
 @login_required
 def view_certain_data(request):
-    templateText = 'Provie start and end date to view data in certain period of time.'
+    templateText = 'Provide start and end date to view data in certain period of time.'
     if request.method == 'POST':
         form = PeriodForm(request.POST)
         if form.is_valid():
