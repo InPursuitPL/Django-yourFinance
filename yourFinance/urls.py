@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^view_certain_data/$', views.view_certain_data, name='view certain data'),
     url(r'^data_edit/(?P<pk>\d+)$', views.data_edit, name='data edit'),
     url(r'^data_delete/(?P<pk>\d+)$', views.data_delete, name='data delete'),
-    url(r'^delete_data/$', views.delete_data, name='delete data'),
+    url(r'^delete_multiple_data/$', views.delete_multiple_data, name='delete multiple data'),
 ]

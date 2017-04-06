@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 
 from .models import Stash
-from .forms import RegistrationForm, StashForm, StashFullForm, DateForm, PeriodForm
+from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, PeriodForm
 
 
 def make_initial_list(elementName, choicesTuple):
@@ -35,7 +35,7 @@ def register_page(request):
 
 @login_required
 def add_data(request):
-    StashFormSet = modelformset_factory(Stash, form=StashForm, extra=4)
+    StashFormSet = modelformset_factory(Stash, form=StashWithoutDateForm, extra=4)
     if request.method == 'POST':
         form = DateForm(request.POST)
         formset = StashFormSet(request.POST)
@@ -82,7 +82,11 @@ def view_certain_data(request):
 @login_required
 def data_edit(request, pk):
     stash = get_object_or_404(Stash, pk=pk)
-    form = StashFullForm(request.POST or None, instance=stash)
+    # I've used here 'Easy Form Views Pattern' just to test it but i will
+    # not change other views to it, as there are some edge cases where this
+    # pattern will fail in an unexpected way. Explicit form seems also to
+    # be more pythonic.
+    form = StashForm(request.POST or None, instance=stash)
     if form.is_valid():
         form.save()
         return render(request, 'yourFinance/success.html')
@@ -97,7 +101,7 @@ def data_delete(request, pk):
     return render(request, 'yourFinance/confirm_delete.html')
 
 @login_required
-def delete_data(request):
+def delete_multiple_data(request):
     templateText = 'Warning! Data from certain period of time will be deleted!'
     if request.method == 'POST':
         form = PeriodForm(request.POST)

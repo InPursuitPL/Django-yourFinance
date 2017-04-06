@@ -14,12 +14,12 @@ class DateForm(forms.Form):
     date = forms.DateField()
 
 
-class StashForm(forms.ModelForm):
+class StashWithoutDateForm(forms.ModelForm):
     class Meta:
         model = Stash
         fields = ('name', 'amount')
 
-class StashFullForm(forms.ModelForm):
+class StashForm(forms.ModelForm):
     class Meta:
         model = Stash
         fields = ('date', 'name', 'amount')

@@ -1,6 +1,6 @@
 {% if user.is_authenticated %}
 	<p>Logged user can not register.</p>
-	<button type="button"><a href="/">Main page</a></button>
+	<button type="button"><a href="{% url 'index' %}">Main page</a></button>
 {% else %}
 	<form method="post" action=".">
 	{% csrf_token %}
