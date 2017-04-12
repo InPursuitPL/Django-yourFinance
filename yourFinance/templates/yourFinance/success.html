@@ -1,5 +1,6 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
+{% csrf_token %}
 <p>Success!</p>
 {{ templateText }}
 <br>

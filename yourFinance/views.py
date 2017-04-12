@@ -1,17 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, formset_factory
 
-from .models import Stash
-from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, PeriodForm
+from .models import Stash, Profile
+from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, NameForm, PeriodForm
 
 
-def make_initial_list(elementName, choicesTuple):
-	list = []
-	for i, elem in enumerate(choicesTuple):
-		list.append({elementName:  choicesTuple[i][0]})
-	return list
+def make_initial_list(elementName, choicesString):
+    list = []
+    choicesList = choicesString.split('\n')
+    for i, elem in enumerate(choicesList):
+        list.append({elementName:  choicesList[i]})
+    return list
 
 
 def index(request):
@@ -35,7 +36,10 @@ def register_page(request):
 
 @login_required
 def add_data(request):
-    StashFormSet = modelformset_factory(Stash, form=StashWithoutDateForm, extra=4)
+    userProfile = Profile.objects.get(user=request.user)
+    stashNamesNumber = len(userProfile.stashNames.split('\n'))
+    print(userProfile.stashNames)
+    StashFormSet = modelformset_factory(Stash, form=StashWithoutDateForm, extra=stashNamesNumber-1)
     if request.method == 'POST':
         form = DateForm(request.POST)
         formset = StashFormSet(request.POST)
@@ -51,7 +55,7 @@ def add_data(request):
                           {'form': form, 'formset': formset})
     form = DateForm()
     formset = StashFormSet(queryset=Stash.objects.none(),
-                           initial=make_initial_list('name', Stash.NAME_CHOICES))
+                           initial=make_initial_list('name', userProfile.stashNames))
     return render(request, 'yourFinance/add_data.html',
                   {'form': form, 'formset': formset})
 
@@ -121,3 +125,23 @@ def delete_multiple_data(request):
     form = PeriodForm()
     return render(request, 'yourFinance/choose_time.html',
                   {'form': form, 'templateText': templateText, 'buttonName': 'Delete'})
+
+@login_required
+def configure_deposition_places(request):
+    userProfile = Profile.objects.get(user=request.user)
+    StashNameFormSet = formset_factory(NameForm, extra=1)
+    if request.method == 'POST':
+        formset = StashNameFormSet(request.POST)
+        if formset.is_valid():
+            newString = ''
+            for dictionary in formset.cleaned_data:
+                print(dictionary)
+                if dictionary and not dictionary['name']=='':
+                    newString += dictionary['name'] + '\n'
+            userProfile.stashNames = newString
+            userProfile.save()
+            return render(request, 'yourFinance/success.html')
+    formset = StashNameFormSet(initial=make_initial_list('name', userProfile.stashNames))
+    return render(request, 'yourFinance/configure_deposition_places.html',
+                  {'formset': formset})
+

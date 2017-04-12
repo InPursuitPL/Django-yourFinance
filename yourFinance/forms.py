@@ -13,6 +13,8 @@ class PeriodForm(forms.Form):
 class DateForm(forms.Form):
     date = forms.DateField()
 
+class NameForm(forms.Form):
+    name = forms.CharField(label='Money deposition place name', max_length=20, required=False)
 
 class StashWithoutDateForm(forms.ModelForm):
     class Meta:

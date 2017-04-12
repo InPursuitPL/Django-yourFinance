@@ -1,0 +1,12 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
+<p> You do not have to fill in additional fields. If you need more fields, use this function again.</p>
+<form method="post" action=".">
+	{% csrf_token %}
+	<table>
+		{{ formset }}
+	</table>
+	<input type="submit" value="Save" />
+</form>
+<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+{% endblock content %}

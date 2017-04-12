@@ -9,4 +9,6 @@ urlpatterns = [
     url(r'^data_edit/(?P<pk>\d+)$', views.data_edit, name='data edit'),
     url(r'^data_delete/(?P<pk>\d+)$', views.data_delete, name='data delete'),
     url(r'^delete_multiple_data/$', views.delete_multiple_data, name='delete multiple data'),
+    url(r'^configure_deposition_places/$', views.configure_deposition_places,
+        name='configure deposition places')
 ]

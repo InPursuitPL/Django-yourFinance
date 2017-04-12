@@ -3,7 +3,7 @@
 <p>Welcome in yourFinance program.</p>
 <p>This program helps you to manage your budget.
     It saves budget data as separate money deposition places
-    for certain month and certain year. You can check detailed
+    for certain date. You can check detailed
     data as well as analyze certain month to see the values
     and other information.</p>
 <p>What would you like to do:</p>
@@ -18,10 +18,9 @@
 	</ul>
 	<li>Configure settings:</li>
 	<ul>
-		<li>Configure names of money deposition places</li>
+		<li><a href="{% url 'configure deposition places' %}">Configure names of money deposition places</a></li>
 		<li>Configure monthly costs names and amounts</li>
 		<li>Configure current costs groups</li>
 	</ul>
-	<li>Exit</li>
 </ul>
 {% endblock content %}
