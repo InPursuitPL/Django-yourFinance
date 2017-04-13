@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory, formset_factory
+from django.http import HttpResponse
 
 from .models import Stash, Profile
 from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, NameForm, PeriodForm
 
 
 def make_initial_list(elementName, choicesString):
+    """Helper function to make initial list in formset."""
     list = []
     choicesList = choicesString.split('\n')
     for i, elem in enumerate(choicesList):
@@ -125,6 +127,41 @@ def delete_multiple_data(request):
     form = PeriodForm()
     return render(request, 'yourFinance/choose_time.html',
                   {'form': form, 'templateText': templateText, 'buttonName': 'Delete'})
+
+def _give_newest_and_total_and_date(objects):
+    """
+    Helper function for analyzing data. Gives newest objects from
+    queryset, total sum stored in their amounts and their common date.
+     """
+    newestObject = objects.reverse()[0]
+    newestObjectsGroup = []
+    totalAmount = 0
+    for object in objects:
+        if object.date == newestObject.date:
+            newestObjectsGroup.append(object)
+            totalAmount += object.amount
+    return (newestObjectsGroup, totalAmount, newestObject.date)
+
+@login_required
+def analyze_last_month(request):
+    allStashes = Stash.objects.filter(user=request.user).order_by('date')
+    if not len(allStashes) > 0:
+        return HttpResponse('No data to analyze!')
+    (newestStashesGroup,
+     totalAmount,
+     newestStashesDate) = _give_newest_and_total_and_date(allStashes)
+
+    previousStashes = Stash.objects.filter(user=request.user).exclude(date=newestStashesDate).order_by('date')
+    if len(previousStashes) > 0:
+        noPrevious = False
+        (newestPreviousGroup,
+         previousTotalAmount,
+         previousStashesDate) = _give_newest_and_total_and_date(previousStashes)
+    else:
+        noPrevious = True
+
+    return HttpResponse(newestStashesGroup)
+
 
 @login_required
 def configure_deposition_places(request):

@@ -9,6 +9,8 @@ class Stash(models.Model):
     date = models.DateField()
     amount = models.FloatField()
 
+    def __str__(self):
+        return self.name+' '+str(self.date)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
