@@ -5,7 +5,7 @@ from django.forms import modelformset_factory, formset_factory
 from django.http import HttpResponse
 
 from .models import Stash, Profile
-from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, NameForm, PeriodForm
+from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, NameForm, PeriodForm, MonthlyCostsForm
 
 
 def make_initial_list(elementName, choicesString):
@@ -40,7 +40,6 @@ def register_page(request):
 def add_data(request):
     userProfile = Profile.objects.get(user=request.user)
     stashNamesNumber = len(userProfile.stashNames.split('\n'))
-    print(userProfile.stashNames)
     StashFormSet = modelformset_factory(Stash, form=StashWithoutDateForm, extra=stashNamesNumber-1)
     if request.method == 'POST':
         form = DateForm(request.POST)
@@ -146,21 +145,41 @@ def _give_newest_and_total_and_date(objects):
 def analyze_last_month(request):
     allStashes = Stash.objects.filter(user=request.user).order_by('date')
     if not len(allStashes) > 0:
-        return HttpResponse('No data to analyze!')
+        return render(request, 'yourFinance/failure.html', {'templateText': 'No data to analyze!'})
     (newestStashesGroup,
      totalAmount,
      newestStashesDate) = _give_newest_and_total_and_date(allStashes)
 
     previousStashes = Stash.objects.filter(user=request.user).exclude(date=newestStashesDate).order_by('date')
     if len(previousStashes) > 0:
-        noPrevious = False
+        arePrevious = True
+        messagePrevious = 'Data from previous record: '
         (newestPreviousGroup,
          previousTotalAmount,
          previousStashesDate) = _give_newest_and_total_and_date(previousStashes)
+        previousTotalStatement = 'Total sum: {}'.format(previousTotalAmount)
+        gain = totalAmount - previousTotalAmount
+        if gain >= 0:
+            messageGain = 'You have gained {}'.format(gain)
+        else:
+            messageGain = 'You have lost {}'.format(abs(gain))
     else:
-        noPrevious = True
+        arePrevious = False
+        messagePrevious = 'No previous data in database.'
 
-    return HttpResponse(newestStashesGroup)
+    if arePrevious:
+        templateDict = {'newestStashesGroup': newestStashesGroup,
+                        'totalAmount': totalAmount,
+                        'messagePrevious': messagePrevious,
+                        'newestPreviousGroup': newestPreviousGroup,
+                        'previousTotalStatement': previousTotalStatement,
+                        'messageGain': messageGain,}
+    else:
+        templateDict = {'newestStashesGroup': newestStashesGroup,
+                        'totalAmount': totalAmount,
+                        'messagePrevious': messagePrevious,}
+
+    return render(request, 'yourFinance/analyze.html', templateDict)
 
 
 @login_required
@@ -182,3 +201,18 @@ def configure_deposition_places(request):
     return render(request, 'yourFinance/configure_deposition_places.html',
                   {'formset': formset})
 
+@login_required
+def configure_monthly_costs(request):
+    userProfile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = MonthlyCostsForm(request.POST)
+        if form.is_valid():
+            userProfile.existenceLevel = form.cleaned_data['existenceLevel']
+            userProfile.minimalLevel = form.cleaned_data['minimalLevel']
+            userProfile.standardLevel = form.cleaned_data['standardLevel']
+            userProfile.save()
+            print(userProfile.existenceLevel)
+            return render(request, 'yourFinance/success.html')
+    form = MonthlyCostsForm()
+    print(userProfile.existenceLevel)
+    return render(request, 'yourFinance/configure_monthly_costs.html', {'form': form})

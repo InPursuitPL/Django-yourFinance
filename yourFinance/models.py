@@ -15,6 +15,18 @@ class Stash(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     stashNames = models.TextField(default='Bank account\nSavings\nWallet\nOthers\n')
+    existenceLevel = models.DecimalField(verbose_name='Existence level monthly cost',
+                                         default=1500.00,
+                                         max_digits=8,
+                                         decimal_places=2)
+    minimalLevel = models.DecimalField(verbose_name='Minimal level monthly cost',
+                                       default=2000.00,
+                                       max_digits=8,
+                                       decimal_places=2)
+    standardLevel = models.DecimalField(verbose_name='Standard level monthly cost',
+                                        default=3000.00,
+                                        max_digits=8,
+                                        decimal_places=2)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

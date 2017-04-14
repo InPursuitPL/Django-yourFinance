@@ -1,0 +1,22 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
+<p>Data to analyze:</p>
+{% for stash in newestStashesGroup %}
+	<div class="stash">
+		{{stash.date}} {{stash.name}} {{stash.amount}}
+		<br>
+	</div>
+{% endfor %}
+<p>Total sum: {{totalAmount}}</p>
+<p>{{messagePrevious}}</p>
+{% for stash in newestPreviousGroup %}
+	<div class="stash">
+		{{stash.date}} {{stash.name}} {{stash.amount}}
+		<br>
+	</div>
+{% endfor %}
+<p>{{previousTotalStatement}}</p>
+<p>{{messageGain}}</p>
+
+	<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+{% endblock content %}
