@@ -191,14 +191,31 @@ def configure_deposition_places(request):
         if formset.is_valid():
             newString = ''
             for dictionary in formset.cleaned_data:
-                print(dictionary)
                 if dictionary and not dictionary['name']=='':
                     newString += dictionary['name'] + '\n'
             userProfile.stashNames = newString
             userProfile.save()
             return render(request, 'yourFinance/success.html')
     formset = StashNameFormSet(initial=make_initial_list('name', userProfile.stashNames))
-    return render(request, 'yourFinance/configure_deposition_places.html',
+    return render(request, 'yourFinance/configure_names.html',
+                  {'formset': formset})
+
+@login_required
+def configure_cost_groups(request):
+    userProfile = Profile.objects.get(user=request.user)
+    CostNameFormSet = formset_factory(NameForm, extra=1)
+    if request.method == 'POST':
+        formset = CostNameFormSet(request.POST)
+        if formset.is_valid():
+            newString = ''
+            for dictionary in formset.cleaned_data:
+                if dictionary and not dictionary['name']=='':
+                    newString += dictionary['name'] + '\n'
+            userProfile.costNames = newString
+            userProfile.save()
+            return render(request, 'yourFinance/success.html')
+    formset = CostNameFormSet(initial=make_initial_list('name', userProfile.costNames))
+    return render(request, 'yourFinance/configure_names.html',
                   {'formset': formset})
 
 @login_required
@@ -213,6 +230,6 @@ def configure_monthly_costs(request):
             userProfile.save()
             print(userProfile.existenceLevel)
             return render(request, 'yourFinance/success.html')
-    form = MonthlyCostsForm()
+    form = MonthlyCostsForm(instance=userProfile)
     print(userProfile.existenceLevel)
     return render(request, 'yourFinance/configure_monthly_costs.html', {'form': form})

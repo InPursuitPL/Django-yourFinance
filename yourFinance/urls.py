@@ -15,5 +15,8 @@ urlpatterns = [
     url(r'^configure_monthly_costs/$',
         views.configure_monthly_costs,
         name='configure monthly costs'),
+    url(r'^configure_cost_groups/$',
+        views.configure_cost_groups,
+        name='configure cost groups'),
     url(r'^analyze_last_month/$', views.analyze_last_month, name='analyze last month')
 ]

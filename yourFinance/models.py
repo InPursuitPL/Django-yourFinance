@@ -10,11 +10,13 @@ class Stash(models.Model):
     amount = models.FloatField()
 
     def __str__(self):
-        return self.name+' '+str(self.date)
+        return '{} {} {}'.format(self.name, self.date, self.amount)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     stashNames = models.TextField(default='Bank account\nSavings\nWallet\nOthers\n')
+    costNames = models.TextField(default='Rent and other charges\nTransportation\n'
+                                         'Clothes\nFood\nHobby\nOthers')
     existenceLevel = models.DecimalField(verbose_name='Existence level monthly cost',
                                          default=1500.00,
                                          max_digits=8,
