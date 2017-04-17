@@ -16,7 +16,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     stashNames = models.TextField(default='Bank account\nSavings\nWallet\nOthers\n')
     costNames = models.TextField(default='Rent and other charges\nTransportation\n'
-                                         'Clothes\nFood\nHobby\nOthers')
+                                         'Clothes\nFood\nHobby\nOthers\n')
     existenceLevel = models.DecimalField(verbose_name='Existence level monthly cost',
                                          default=1500.00,
                                          max_digits=8,

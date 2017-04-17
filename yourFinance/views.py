@@ -5,7 +5,8 @@ from django.forms import modelformset_factory, formset_factory
 from django.http import HttpResponse
 
 from .models import Stash, Profile
-from .forms import RegistrationForm, StashWithoutDateForm, StashForm, DateForm, NameForm, PeriodForm, MonthlyCostsForm
+from .forms import RegistrationForm, StashWithoutDateForm, StashForm, \
+    DateForm, NameForm, PeriodForm, MonthlyCostsForm, CostGroupsForm
 
 
 def make_initial_list(elementName, choicesString):
@@ -13,7 +14,8 @@ def make_initial_list(elementName, choicesString):
     list = []
     choicesList = choicesString.split('\n')
     for i, elem in enumerate(choicesList):
-        list.append({elementName:  choicesList[i]})
+        if choicesList[i] != '':
+            list.append({elementName:  choicesList[i]})
     return list
 
 
@@ -143,6 +145,7 @@ def _give_newest_and_total_and_date(objects):
 
 @login_required
 def analyze_last_month(request):
+    userProfile = Profile.objects.get(user=request.user)
     allStashes = Stash.objects.filter(user=request.user).order_by('date')
     if not len(allStashes) > 0:
         return render(request, 'yourFinance/failure.html', {'templateText': 'No data to analyze!'})
@@ -167,17 +170,46 @@ def analyze_last_month(request):
         arePrevious = False
         messagePrevious = 'No previous data in database.'
 
-    if arePrevious:
-        templateDict = {'newestStashesGroup': newestStashesGroup,
-                        'totalAmount': totalAmount,
-                        'messagePrevious': messagePrevious,
-                        'newestPreviousGroup': newestPreviousGroup,
-                        'previousTotalStatement': previousTotalStatement,
-                        'messageGain': messageGain,}
+    monthlyCostsList = [(userProfile.existenceLevel, 'existence level'),
+                        (userProfile.minimalLevel, 'minimal level'),
+                        (userProfile.standardLevel, 'standard level')]
+    monthlyCostsStrings = []
+    for amount in monthlyCostsList:
+        monthlyCostsStrings.append('Your sum is enough for {} months'
+                                   ' based on {} amount of {}.'.format(
+            round(totalAmount/float(amount[0]),1),
+            amount[0],
+            amount[1]))
+
+    CostGroupsFormSet = formset_factory(CostGroupsForm, extra=0)
+    if request.method == 'POST':
+        cost_groups_formset = CostGroupsFormSet(request.POST)
+        if cost_groups_formset.is_valid():
+            totalCosts = 0
+            totalAmountAfterExpenses = totalAmount
+            for dictionary in cost_groups_formset.cleaned_data:
+                totalCosts += dictionary['amount']
+                totalAmountAfterExpenses -= dictionary['amount']
+            afterCostsMessage = 'Your total current costs are {},' \
+                                ' after expenses you will have {}.'\
+                .format(totalCosts,totalAmountAfterExpenses)
     else:
-        templateDict = {'newestStashesGroup': newestStashesGroup,
-                        'totalAmount': totalAmount,
-                        'messagePrevious': messagePrevious,}
+        cost_groups_formset = CostGroupsFormSet(
+            initial=make_initial_list('name', userProfile.costNames)
+        )
+        afterCostsMessage = ''
+    templateDict = {'newestStashesGroup': newestStashesGroup,
+                    'totalAmount': totalAmount,
+                    'messagePrevious': messagePrevious,
+                    'monthlyCostsStrings': monthlyCostsStrings,
+                    'formset': cost_groups_formset,
+                    'afterCostsMessage': afterCostsMessage
+                    }
+
+    if arePrevious:
+        templateDict['newestPreviousGroup'] = newestPreviousGroup
+        templateDict['previousTotalStatement'] = previousTotalStatement
+        templateDict['messageGain'] = messageGain
 
     return render(request, 'yourFinance/analyze.html', templateDict)
 
@@ -201,6 +233,21 @@ def configure_deposition_places(request):
                   {'formset': formset})
 
 @login_required
+def configure_monthly_costs(request):
+    userProfile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = MonthlyCostsForm(request.POST)
+        if form.is_valid():
+            userProfile.existenceLevel = form.cleaned_data['existenceLevel']
+            userProfile.minimalLevel = form.cleaned_data['minimalLevel']
+            userProfile.standardLevel = form.cleaned_data['standardLevel']
+            userProfile.save()
+            print(userProfile.existenceLevel)
+            return render(request, 'yourFinance/success.html')
+    form = MonthlyCostsForm(instance=userProfile)
+    return render(request, 'yourFinance/configure_monthly_costs.html', {'form': form})
+
+@login_required
 def configure_cost_groups(request):
     userProfile = Profile.objects.get(user=request.user)
     CostNameFormSet = formset_factory(NameForm, extra=1)
@@ -217,19 +264,3 @@ def configure_cost_groups(request):
     formset = CostNameFormSet(initial=make_initial_list('name', userProfile.costNames))
     return render(request, 'yourFinance/configure_names.html',
                   {'formset': formset})
-
-@login_required
-def configure_monthly_costs(request):
-    userProfile = Profile.objects.get(user=request.user)
-    if request.method == 'POST':
-        form = MonthlyCostsForm(request.POST)
-        if form.is_valid():
-            userProfile.existenceLevel = form.cleaned_data['existenceLevel']
-            userProfile.minimalLevel = form.cleaned_data['minimalLevel']
-            userProfile.standardLevel = form.cleaned_data['standardLevel']
-            userProfile.save()
-            print(userProfile.existenceLevel)
-            return render(request, 'yourFinance/success.html')
-    form = MonthlyCostsForm(instance=userProfile)
-    print(userProfile.existenceLevel)
-    return render(request, 'yourFinance/configure_monthly_costs.html', {'form': form})

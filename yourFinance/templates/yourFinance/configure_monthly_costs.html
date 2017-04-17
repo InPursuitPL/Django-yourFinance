@@ -3,7 +3,9 @@
 <p> Here you can change amounts in your monthly cost groups.</p>
 <form method="post" action=".">
 	{% csrf_token %}
-	{{form}}
+	<table>
+	{{form.as_table}}
+	</table>
 	<input type="submit" value="Save" />
 </form>
 <button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>

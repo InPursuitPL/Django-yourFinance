@@ -59,4 +59,6 @@ alphanumeric characters and the underscore.')
             return username
         raise forms.ValidationError('Username is already taken.', code='invalid')
 
-
+class CostGroupsForm(forms.Form):
+  amount = forms.FloatField()
+  name = forms.CharField(widget=forms.HiddenInput())

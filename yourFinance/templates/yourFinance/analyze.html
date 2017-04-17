@@ -17,6 +17,31 @@
 {% endfor %}
 <p>{{previousTotalStatement}}</p>
 <p>{{messageGain}}</p>
+{% for string in monthlyCostsStrings %}
+{{string}}
+<br>
+{% endfor %}
+<br>
+<p>To check your current total costs and how much you will have after expenses</p>
+<p>write how much you will spend in each costs group and hit 'Calculate' button:</p>
+<form method="post" action=".">
+	{% csrf_token %}
+	{{ formset.management_form }}
+	<table>
+		{% for form in formset %}
+	  	{{ form.name}}
+	  	<label>{{ form.name.value}}</label>
+			<br>
+			{{form.amount}}
+			<br>
+			<br>
+		{% endfor %}
+	</table>
+	<input type="submit" value="Calculate">
+</form>
 
-	<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+{{afterCostsMessage}}
+
+<br>
+<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
 {% endblock content %}
