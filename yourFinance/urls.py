@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^configure_cost_groups/$',
         views.configure_cost_groups,
         name='configure cost groups'),
-    url(r'^analyze_last_month/$', views.analyze_last_month, name='analyze last month')
+    url(r'^analyze_data/$', views.analyze_data, name='analyze data'),
+    url(r'^(?P<date>.+)/analyze_record/$', views.analyze_record, name='analyze record'),
 ]

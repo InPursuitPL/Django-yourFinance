@@ -11,7 +11,7 @@ class PeriodForm(forms.Form):
     endDate = forms.DateField(label='End date', required=False)
 
 class DateForm(forms.Form):
-    date = forms.DateField()
+    date = forms.DateField(required=False)
 
 class NameForm(forms.Form):
     name = forms.CharField(max_length=30, required=False)

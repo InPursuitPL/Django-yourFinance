@@ -46,7 +46,7 @@ def add_data(request):
     if request.method == 'POST':
         form = DateForm(request.POST)
         formset = StashFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid() and formset.is_valid()and form.has_changed():
             stashList = formset.save(commit=False)
             for stash in stashList:
                 stash.user = request.user
@@ -87,6 +87,7 @@ def view_data(request):
 
 @login_required
 def data_edit(request, pk):
+    message = 'Here you can edit chosen data.'
     stash = get_object_or_404(Stash, pk=pk)
     # I've used here 'Easy Form Views Pattern' just to test it but i will
     # not change other views to it, as there are some edge cases where this
@@ -96,7 +97,7 @@ def data_edit(request, pk):
     if form.is_valid():
         form.save()
         return render(request, 'yourFinance/success.html')
-    return render(request, 'yourFinance/data_form.html', {'form': form})
+    return render(request, 'yourFinance/data_form.html', {'form': form, 'message': message})
 
 @login_required
 def data_delete(request, pk):
@@ -129,6 +130,24 @@ def delete_multiple_data(request):
     return render(request, 'yourFinance/choose_time.html',
                   {'form': form, 'templateText': templateText, 'buttonName': 'Delete'})
 
+@login_required
+def analyze_data(request):
+    message = "Provide date for which you would like your data to be analyzed. " \
+              "Press 'submit' button without given date to analyze your newest record." \
+              " If you will choose date for which there are no data, records closest to " \
+              "the date (but not after it) will be taken."
+    if request.method == 'POST':
+        form = DateForm(request.POST)
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            if form.cleaned_data['date'] == None:
+                date = '0001-01-01'
+            return redirect('analyze record', date=date)
+    form = DateForm()
+    return render(request,
+                  'yourFinance/data_form.html',
+                  {'form': form, 'message': message})
+
 def _give_newest_and_total_and_date(objects):
     """
     Helper function for analyzing data. Gives newest objects from
@@ -144,16 +163,21 @@ def _give_newest_and_total_and_date(objects):
     return (newestObjectsGroup, totalAmount, newestObject.date)
 
 @login_required
-def analyze_last_month(request):
+def analyze_record(request, date):
     userProfile = Profile.objects.get(user=request.user)
     allStashes = Stash.objects.filter(user=request.user).order_by('date')
     if not len(allStashes) > 0:
         return render(request, 'yourFinance/failure.html', {'templateText': 'No data to analyze!'})
-    (newestStashesGroup,
-     totalAmount,
-     newestStashesDate) = _give_newest_and_total_and_date(allStashes)
 
-    previousStashes = Stash.objects.filter(user=request.user).exclude(date=newestStashesDate).order_by('date')
+    if date != '0001-01-01':
+        chosenStashes = Stash.objects.filter(user=request.user, date__lte=date).order_by('date')
+    else:
+        chosenStashes = allStashes
+    (newestStashesGroup,
+    totalAmount,
+    newestStashesDate) = _give_newest_and_total_and_date(chosenStashes)
+
+    previousStashes = chosenStashes.exclude(date=newestStashesDate).order_by('date')
     if len(previousStashes) > 0:
         arePrevious = True
         messagePrevious = 'Data from previous record: '
@@ -175,9 +199,9 @@ def analyze_last_month(request):
                         (userProfile.standardLevel, 'standard level')]
     monthlyCostsStrings = []
     for amount in monthlyCostsList:
-        monthlyCostsStrings.append('Your sum is enough for {} months'
+        monthlyCostsStrings.append('Your current sum is enough for {} months'
                                    ' based on {} amount of {}.'.format(
-            round(totalAmount/float(amount[0]),1),
+            round(totalAmount / float(amount[0]), 1),
             amount[0],
             amount[1]))
 
@@ -191,8 +215,8 @@ def analyze_last_month(request):
                 totalCosts += dictionary['amount']
                 totalAmountAfterExpenses -= dictionary['amount']
             afterCostsMessage = 'Your total current costs are {},' \
-                                ' after expenses you will have {}.'\
-                .format(totalCosts,totalAmountAfterExpenses)
+                                ' after expenses you will have {}.' \
+                .format(totalCosts, totalAmountAfterExpenses)
     else:
         cost_groups_formset = CostGroupsFormSet(
             initial=make_initial_list('name', userProfile.costNames)
@@ -212,7 +236,6 @@ def analyze_last_month(request):
         templateDict['messageGain'] = messageGain
 
     return render(request, 'yourFinance/analyze.html', templateDict)
-
 
 @login_required
 def configure_deposition_places(request):
