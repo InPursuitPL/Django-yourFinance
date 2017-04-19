@@ -31,6 +31,9 @@ class MonthlyCostsForm(forms.ModelForm):
         model = Profile
         fields = ('existenceLevel', 'minimalLevel', 'standardLevel')
 
+class CostGroupsForm(forms.Form):
+  amount = forms.FloatField()
+  name = forms.CharField(widget=forms.HiddenInput())
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(label='User name', max_length=30)
@@ -59,6 +62,4 @@ alphanumeric characters and the underscore.')
             return username
         raise forms.ValidationError('Username is already taken.', code='invalid')
 
-class CostGroupsForm(forms.Form):
-  amount = forms.FloatField()
-  name = forms.CharField(widget=forms.HiddenInput())
+

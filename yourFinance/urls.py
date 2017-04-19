@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'^data_edit/(?P<pk>\d+)$', views.data_edit, name='data edit'),
     url(r'^data_delete/(?P<pk>\d+)$', views.data_delete, name='data delete'),
     url(r'^delete_multiple_data/$', views.delete_multiple_data, name='delete multiple data'),
+url(r'^analyze_data/$', views.analyze_data, name='analyze data'),
+    url(r'^(?P<date>.+)/analyze_record/$', views.analyze_record, name='analyze record'),
     url(r'^configure_deposition_places/$',
         views.configure_deposition_places,
         name='configure deposition places'),
@@ -18,6 +20,4 @@ urlpatterns = [
     url(r'^configure_cost_groups/$',
         views.configure_cost_groups,
         name='configure cost groups'),
-    url(r'^analyze_data/$', views.analyze_data, name='analyze data'),
-    url(r'^(?P<date>.+)/analyze_record/$', views.analyze_record, name='analyze record'),
 ]
