@@ -50,6 +50,13 @@ def register_page(request):
     form = RegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
 
+@login_required
+def view_profile(request):
+    userProfile = Profile.objects.get(user=request.user)
+    stashNamesList = userProfile.stashNames.split('\n')
+    costNamesList = userProfile. costNames.split('\n')
+
+    return render(request, 'registration/view_profile.html', {'stashNamesList': stashNamesList, 'costNamesList': costNamesList})
 
 @login_required
 def add_data(request):

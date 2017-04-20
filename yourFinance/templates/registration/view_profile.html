@@ -1,0 +1,24 @@
+<p><strong>Name:</strong> {{ user.username }}</p>
+<p><strong>e-mail address:</strong> {{ user.email }}</p>
+
+<p><strong>Names of money deposition places:</strong></p>
+{% for stashName in stashNamesList %}
+	{{stashName}}
+	<br>
+{% endfor %}
+<a href="{% url 'configure deposition places' %}"> Edit</a>
+
+<p><strong>Names of current costs groups:</strong></p>
+{% for costName in costNamesList %}
+	{{costName}}
+	<br>
+{% endfor %}
+<a href="{% url 'configure cost groups' %}"> Edit</a>
+
+<p><strong>Monthly costs amounts:</strong></p>
+<p>Existence level monthly cost is {{user.profile.existenceLevel}}</p>
+<p>Minimal level monthly cost is {{user.profile.minimalLevel}}</p>
+<p>Standard level monthly cost is {{user.profile.standardLevel}}</p>
+<a href="{% url 'configure monthly costs' %}"> Edit</a>
+<br>
+<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
