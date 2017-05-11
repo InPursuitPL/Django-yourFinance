@@ -1,3 +1,5 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
 <p><strong>Name:</strong> {{ user.username }}</p>
 <p><strong>e-mail address:</strong> {{ user.email }}</p>
 
@@ -22,3 +24,4 @@
 <a href="{% url 'configure monthly costs' %}"> Edit</a>
 <br>
 <button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+{% endblock content %}

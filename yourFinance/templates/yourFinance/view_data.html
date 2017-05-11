@@ -1,12 +1,40 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
+	<div id="stashes">
+	<table>
+		<tr>
+			<th>Date</th>
+			<th>Description</th>
+			<th>Amount</th>
+		</tr>
 	{% for stash in stashes %}
 		<div class="stash">
-			{{stash.date}} {{stash.name}} {{stash.amount}} 
-			<a href="{% url 'data edit' stash.id %}">edit</a>
-			<a href="{% url 'data delete' stash.id %}">delete</a>
-			<br>
+			<tr>
+				<td>{{stash.date}}</td>
+				<td>{{stash.name}}</td>
+				<td>{{stash.amount}}</td>
+				<td><a href="{% url 'data edit' stash.id %}">edit</a></td>
+				<td><a href="{% url 'data delete' stash.id %}">delete</a></td>
+			</tr>
+		</div>
 		</div>
 	{% endfor %}
+	</table>
+	
+	<div id="amounts">
+		<table>
+			<tr>
+				<th>Total amounts</th>
+			</tr>
+		{% for total in totals %}
+			<tr>
+				<td>
+				{{total}}
+				</td>
+			<tr>
+		{% endfor %}
+		</table>
+	</div>
+	
 	<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
 {% endblock content %}

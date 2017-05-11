@@ -7,7 +7,7 @@ class Stash(models.Model):
     user = models.ForeignKey(User)
     name = models.CharField(max_length=20)
     date = models.DateField()
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=20, decimal_places=2)
 
     def __str__(self):
         return '{} {} {}'.format(self.name, self.date, self.amount)

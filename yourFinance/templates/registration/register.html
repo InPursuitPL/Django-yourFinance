@@ -1,3 +1,5 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
 {% if user.is_authenticated %}
 	<p>Logged user can not register.</p>
 	<button type="button"><a href="{% url 'index' %}">Main page</a></button>
@@ -8,3 +10,4 @@
 	<input type="submit" value="Register" />
 	</form>
 {% endif %}
+{% endblock content %}

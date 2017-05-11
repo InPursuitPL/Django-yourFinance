@@ -1,15 +1,26 @@
-{% if user.is_authenticated %}
-	<p class="top-menu">
-		Hi {{ user.username }} 
-		<small>
-			(<a href="{% url 'logout' %}">Logout</a>) 
-			(<a href="{% url 'view profile' %}">View Profile</a>)
-		</small>
-	</p>
-{% else %}
-	<p class="top-menu"> Login or register. 
-	<small>(<a href="{% url 'login' %}">Login</a>) (<a href="{% url 'register' %}">Register</a>)</small></p>
-{% endif %}
-
-{% block content %}
-{% endblock %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>yourFinance</title>
+	</head>
+	<body>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/yourFinance.css' %}">
+		<div id="profile">
+		{% if user.is_authenticated %}
+			<p class="top-menu">
+				Hi {{ user.username }} 
+				<small>
+					(<a href="{% url 'logout' %}">Logout</a>) 
+					(<a href="{% url 'view profile' %}">View Profile</a>)
+				</small>
+			</p>
+		{% else %}
+			<p class="top-menu"> Login or register. 
+			<small>(<a href="{% url 'login' %}">Login</a>) (<a href="{% url 'register' %}">Register</a>)</small></p>
+		{% endif %}
+		</div>
+	{% block content %}
+	{% endblock %}
+	<body>
+</html>

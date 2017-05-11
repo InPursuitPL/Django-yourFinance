@@ -1,3 +1,6 @@
+ {% extends 'yourFinance/base.html' %}
+{% block content %}
  <p> {{user}} has been registered.</p>
 
 <button type="button"><a href="{% url 'index' %}">Main page</a></button>
+{% endblock content %}

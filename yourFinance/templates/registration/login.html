@@ -1,3 +1,5 @@
+{% extends 'yourFinance/base.html' %}
+{% block content %}
 {% if form.errors %}
     <p>Wrong password or user name. Try again.</p>
 {% endif %}
@@ -18,4 +20,4 @@
 	<input type="submit" value="login" />
 	<input type="hidden" name="next" value="{{ next }}" />
 </form>
-
+{% endblock content %}

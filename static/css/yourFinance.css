@@ -1,0 +1,39 @@
+html {
+	margin: 20px;
+}
+
+body {
+	color: #4d4d4d;
+	background-color: #f2f2f2;
+	font-family: verdana, helvetica, arial, serif
+	
+}
+
+a {
+    color: grey;
+}
+
+#profile {
+	text-align: right;
+	border: 1px solid silver;
+	background-color: #cccccc;
+}
+
+#stashes {
+    position: absolute;
+    width: 500px;
+	border-style: solid;
+    border-width: 1px;
+    border-color: black;
+
+}
+
+#amounts {
+	position: absolute;
+	width: 400px;
+	top: 0;
+    margin-left: 500px;
+	border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}

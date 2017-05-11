@@ -17,6 +17,19 @@ def make_initial_list(elementName, choicesString):
             list.append({elementName:  choicesList[i]})
     return list
 
+def custom_split(choicesString):
+    """
+    Helper function to create list from string, based on \n but
+    with no empty element at last place of the list if string
+    ends with \n, as normal .split method would do.
+    """
+    choicesList = choicesString.split('\n')
+    for element in choicesList:
+        if element == '':
+            choicesList.remove(element)
+    return choicesList
+
+
 def _give_newest_and_total_and_date(objects):
     """
     Helper function for analyzing data. Gives newest objects from
@@ -52,11 +65,14 @@ def register_page(request):
 
 @login_required
 def view_profile(request):
+    """Displays view user profile page with links to configuration options."""
     userProfile = Profile.objects.get(user=request.user)
-    stashNamesList = userProfile.stashNames.split('\n')
-    costNamesList = userProfile. costNames.split('\n')
-
-    return render(request, 'registration/view_profile.html', {'stashNamesList': stashNamesList, 'costNamesList': costNamesList})
+    stashNamesList = custom_split(userProfile.stashNames)
+    costNamesList = custom_split(userProfile.costNames)
+    return render(request,
+                  'registration/view_profile.html',
+                  {'stashNamesList': stashNamesList,
+                   'costNamesList': costNamesList})
 
 @login_required
 def add_data(request):
@@ -71,11 +87,14 @@ def add_data(request):
         formset = StashFormSet(request.POST)
         if form.is_valid() and formset.is_valid()and form.has_changed():
             stashList = formset.save(commit=False)
+            templateText = '{} entries were added.'.format(len(stashList))
             for stash in stashList:
                 stash.user = request.user
                 stash.date = form.cleaned_data['date']
                 stash.save()
-            return render(request, 'yourFinance/success.html')
+            return render(request,
+                          'yourFinance/success.html',
+                          {'templateText': templateText,})
         else:
             return render(request, 'yourFinance/add_data.html',
                           {'form': form, 'formset': formset})
@@ -88,7 +107,10 @@ def add_data(request):
 
 @login_required
 def view_data(request):
-    """Views all Stash data or data from date range."""
+    """
+    Displays all Stash data or data from date range
+    together with total amount for certain date.
+    """
     templateText = "Provide start and end date to view data in " \
                    "certain period of time. Press 'submit' button " \
                    "without given dates to view all data."
@@ -103,9 +125,26 @@ def view_data(request):
                     date__range=(form.cleaned_data['startDate'],
                                 form.cleaned_data['endDate'])
                 ).order_by('date')
+
+            stashesList = []
+            for element in stashes:
+                stashesList.append(element)
+
+            totalList = []
+            totalAmount = 0
+            for stash in stashesList:
+                totalAmount += stash.amount
+                currentDate = stash.date
+                if stash == stashesList[len(stashesList)-1] or \
+                                stashesList[stashesList.index(stash)+1].date != stash.date:
+                    groupString = 'Total amount for {}: {}'.format(currentDate, totalAmount)
+                    totalList.append(groupString)
+                    totalAmount = 0
+
             return render(request,
                           'yourFinance/view_data.html',
-                          {'stashes': stashes})
+                          {'stashes': stashes,
+                           'totals': totalList})
         else:
             return render(request, 'yourFinance/choose_time.html',
                           {'form': form,
@@ -237,7 +276,7 @@ def analyze_record(request, date):
     for amount in monthlyCostsList:
         monthlyCostsStrings.append('Your current sum is enough for {} months'
                                    ' based on {} amount of {}.'.format(
-            round(totalAmount / float(amount[0]), 1),
+            round(totalAmount / amount[0], 1),
             amount[0],
             amount[1]))
 
