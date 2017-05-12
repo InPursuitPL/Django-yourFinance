@@ -7,7 +7,6 @@ from .models import Stash
 class LoginTestCase(TestCase):
     """Tests for login and view profile functionalities."""
     def setUp(self):
-        self.client = Client()
         self.user = User.objects.create_user('john',
                                              'lennon@thebeatles.com',
                                              'johnpassword')
@@ -26,7 +25,6 @@ class LoginTestCase(TestCase):
 class ViewDataTestCase(TestCase):
     """Tests for view data functionality."""
     def setUp(self):
-        self.client = Client()
         self.user = User.objects.create_user('john',
                                              'lennon@thebeatles.com',
                                              'johnpassword')
@@ -35,21 +33,54 @@ class ViewDataTestCase(TestCase):
     def test_view_all_data_when_empty(self):
         response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.context['stashes']), '<QuerySet []>')
+        self.assertEqual(response.context['stashes_groups_and_totals'], [])
 
     def test_view_all_data(self):
         Stash.objects.create(user= self.user, name= 'Bank account',
                              date= '2001-01-01', amount= 1500)
         response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.context['stashes']),
-                         '<QuerySet [<Stash: Bank account 2001-01-01 1500.00>]>')
+        self.assertEqual(str(response.context['stashes_groups_and_totals']),
+                         "[[[<Stash: Bank account 2001-01-01 1500.00>], "
+                         "['Total amount for 2001-01-01: 1500.00']]]")
 
+
+class DeleteDataTestCase(TestCase):
+    """Tests for delete data functionality."""
+    def setUp(self):
+        self.user = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword')
+        self.client.login(username='john', password='johnpassword')
+
+    def test_delete_data(self):
+        # Creates two stash objects for different dates.
+        Stash.objects.create(user=self.user, name='Bank account',
+                             date='2001-01-01', amount=1500)
+        Stash.objects.create(user=self.user, name='Bank account',
+                             date='2002-02-02', amount=2500)
+        # Asserts two objects are visible in view data.
+        response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(str(response.context['stashes_groups_and_totals']),
+                         "[[[<Stash: Bank account 2001-01-01 1500.00>], "
+                         "['Total amount for 2001-01-01: 1500.00']], "
+                         "[[<Stash: Bank account 2002-02-02 2500.00>], "
+                         "['Total amount for 2002-02-02: 2500.00']]]")
+        # Deletes one of stash objects.
+        response = self.client.post('/delete_multiple_data/',
+                                    {'startDate': '2002-02-02', 'endDate': '2002-02-02'})
+        self.assertEqual(response.status_code, 200)
+        # Asserts only one object is left in view data.
+        response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(str(response.context['stashes_groups_and_totals']),
+                         "[[[<Stash: Bank account 2001-01-01 1500.00>], "
+                         "['Total amount for 2001-01-01: 1500.00']]]")
 
 class AnalyzeDataTestCase(TestCase):
     """Tests for analyze data functionality."""
     def setUp(self):
-        self.client = Client()
         self.user = User.objects.create_user('john',
                                              'lennon@thebeatles.com',
                                              'johnpassword')
@@ -57,9 +88,8 @@ class AnalyzeDataTestCase(TestCase):
 
     def test_analyze_data_when_empty(self):
         response = self.client.get('/9999-12-31/analyze_record/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['templateText'],
-                         'No data to analyze!')
+        print(response.context)
+        self.assertContains(response, 'No data to analyze!')
 
     def test_analyze_data(self):
         Stash.objects.create(user=self.user, name='Bank account',
