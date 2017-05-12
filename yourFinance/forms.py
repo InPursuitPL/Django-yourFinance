@@ -10,30 +10,37 @@ class PeriodForm(forms.Form):
     startDate = forms.DateField(label='Start date', required=False)
     endDate = forms.DateField(label='End date', required=False)
 
+
 class DateForm(forms.Form):
     date = forms.DateField(required=False)
 
+
 class NameForm(forms.Form):
     name = forms.CharField(max_length=30, required=False)
+
 
 class StashWithoutDateForm(forms.ModelForm):
     class Meta:
         model = Stash
         fields = ('name', 'amount')
 
+
 class StashForm(forms.ModelForm):
     class Meta:
         model = Stash
         fields = ('date', 'name', 'amount')
+
 
 class MonthlyCostsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('existenceLevel', 'minimalLevel', 'standardLevel')
 
+
 class CostGroupsForm(forms.Form):
   amount = forms.FloatField()
   name = forms.CharField(widget=forms.HiddenInput())
+
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(label='User name', max_length=30)

@@ -1,40 +1,28 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-	<div id="stashes">
-	<table>
-		<tr>
-			<th>Date</th>
-			<th>Description</th>
-			<th>Amount</th>
-		</tr>
-	{% for stash in stashes %}
-		<div class="stash">
-			<tr>
-				<td>{{stash.date}}</td>
-				<td>{{stash.name}}</td>
-				<td>{{stash.amount}}</td>
-				<td><a href="{% url 'data edit' stash.id %}">edit</a></td>
-				<td><a href="{% url 'data delete' stash.id %}">delete</a></td>
-			</tr>
-		</div>
-		</div>
-	{% endfor %}
-	</table>
-	
-	<div id="amounts">
 		<table>
+		{% for listOfLists in stashes_groups_and_totals %}
 			<tr>
-				<th>Total amounts</th>
-			</tr>
-		{% for total in totals %}
-			<tr>
+			{% for listOfStashesOrTotal in listOfLists %}
 				<td>
-				{{total}}
+				{% for element in listOfStashesOrTotal %}
+					{% if element.date %}
+						<div class="stash">
+							{{element.date}} {{element.name}} {{element.amount}} 
+							<a href="{% url 'data edit' element.id %}">edit</a>
+							<a href="{% url 'data delete' element.id %}">delete</a>
+							<br>
+						</div>
+					{% else %}
+						<p>{{ element }}</p>
+					{% endif %}
+				{% endfor %}
+				<br>
 				</td>
-			<tr>
+			{% endfor %}
+			</tr>
 		{% endfor %}
 		</table>
-	</div>
 	
 	<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
 {% endblock content %}

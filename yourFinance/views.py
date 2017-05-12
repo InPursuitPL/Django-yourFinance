@@ -105,6 +105,35 @@ def add_data(request):
     return render(request, 'yourFinance/add_data.html',
                   {'form': form, 'formset': formset})
 
+def stashes_with_total_amounts(stashesList):
+    """
+    Helper function to format output for view_data with
+    stashes groups and total amounts for each group.
+    """
+    nested_list = []
+    stashes_group_list = []
+    total_amount = 0
+    # Output is in the format [[
+    # [stash1, stash2, ...],
+    # [string_with_date_and_amount_for_preceding_group,]],
+    # [[stash4, stash5, ...],
+    # [string,]],  ... ]
+    for stash in stashesList:
+        stashes_group_list.append(stash)
+        total_amount += stash.amount
+        stashes_date = stash.date
+        if stash == stashesList[len(stashesList) - 1] or \
+                        stashesList[stashesList.index(stash) + 1].date != stash.date:
+            stashes_and_total_list = []
+            stashes_and_total_list.append(stashes_group_list)
+            stashes_group_list = []
+            group_string = 'Total amount for {}: {}'.format(stashes_date,
+                                                            total_amount)
+            stashes_and_total_list.append([group_string, ])
+            nested_list.append(stashes_and_total_list)
+            total_amount = 0
+    return nested_list
+
 @login_required
 def view_data(request):
     """
@@ -125,26 +154,15 @@ def view_data(request):
                     date__range=(form.cleaned_data['startDate'],
                                 form.cleaned_data['endDate'])
                 ).order_by('date')
-
+            #Queryset into list.
             stashesList = []
             for element in stashes:
                 stashesList.append(element)
-
-            totalList = []
-            totalAmount = 0
-            for stash in stashesList:
-                totalAmount += stash.amount
-                currentDate = stash.date
-                if stash == stashesList[len(stashesList)-1] or \
-                                stashesList[stashesList.index(stash)+1].date != stash.date:
-                    groupString = 'Total amount for {}: {}'.format(currentDate, totalAmount)
-                    totalList.append(groupString)
-                    totalAmount = 0
-
+            # usage of helper function to create output for the template.
+            stashes_groups_and_totals = stashes_with_total_amounts(stashesList)
             return render(request,
                           'yourFinance/view_data.html',
-                          {'stashes': stashes,
-                           'totals': totalList})
+                          {'stashes_groups_and_totals': stashes_groups_and_totals})
         else:
             return render(request, 'yourFinance/choose_time.html',
                           {'form': form,

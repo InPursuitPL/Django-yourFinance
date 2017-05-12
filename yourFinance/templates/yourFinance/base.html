@@ -20,6 +20,18 @@
 			<small>(<a href="{% url 'login' %}">Login</a>) (<a href="{% url 'register' %}">Register</a>)</small></p>
 		{% endif %}
 		</div>
+	<div id="menu">
+	<a href="{% url 'index' %}">Back to main page.</a><br>
+	<p>Data options:</p>
+	<a href="{% url 'add data' %}">Add new data</a><br>
+	<a href="{% url 'view data' %}">View, edit and delete data</a><br>
+	<a href="{% url 'delete multiple data' %}">Delete multiple data</a><br>
+	<a href="{% url 'analyze data' %}">Analyze data</a></button><br>
+	<p>Configure settings:</p>
+	<a href="{% url 'configure deposition places' %}">Configure names of money deposition places</a><br>
+	<a href="{% url 'configure monthly costs' %}">Configure monthly costs amounts</a><br>
+	<a href="{% url 'configure cost groups' %}">Configure current costs groups</a>
+	</div>
 	{% block content %}
 	{% endblock %}
 	<body>

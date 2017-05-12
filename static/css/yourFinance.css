@@ -4,9 +4,8 @@ html {
 
 body {
 	color: #4d4d4d;
-	background-color: #f2f2f2;
-	font-family: verdana, helvetica, arial, serif
-	
+	background-color: white;
+	font-family: verdana, helvetica, arial, serif;	
 }
 
 a {
@@ -16,24 +15,21 @@ a {
 #profile {
 	text-align: right;
 	border: 1px solid silver;
-	background-color: #cccccc;
+	border-radius: 4px;
+	background-color: white;
 }
 
-#stashes {
-    position: absolute;
-    width: 500px;
-	border-style: solid;
-    border-width: 1px;
-    border-color: black;
-
+#menu {
+	float: right;
+	margin: 20px;
+	margin-right: 0px;
+	text-align: center;
+	border: 1px solid silver;
+	border-radius: 4px;
+	background-color: white;
+	
 }
 
-#amounts {
-	position: absolute;
-	width: 400px;
-	top: 0;
-    margin-left: 500px;
-	border-style: solid;
-    border-width: 1px;
-    border-color: black;
+#menu a:hover {
+	color: lightblue;
 }
