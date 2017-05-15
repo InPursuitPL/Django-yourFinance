@@ -1,6 +1,7 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-{{ templateText }}
-<br>
-<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+	<strong class="errorMessage">{{ templateText }}</strong>
+	<br>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

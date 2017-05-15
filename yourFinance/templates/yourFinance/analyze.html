@@ -1,47 +1,45 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-<p>Data to analyze:</p>
-{% for stash in newestStashesGroup %}
-	<div class="stash">
-		{{stash.date}} {{stash.name}} {{stash.amount}}
-		<br>
-	</div>
-{% endfor %}
-<p>Total sum: {{totalAmount}}</p>
-<p>{{messagePrevious}}</p>
-{% for stash in newestPreviousGroup %}
-	<div class="stash">
-		{{stash.date}} {{stash.name}} {{stash.amount}}
-		<br>
-	</div>
-{% endfor %}
-<p>{{previousTotalStatement}}</p>
-<p>{{messageGain}}</p>
-{% for string in monthlyCostsStrings %}
-{{string}}
-<br>
-{% endfor %}
-<br>
-<p>To check your current total costs and how much you will have after expenses</p>
-<p>write how much you will spend in each costs group and hit 'Calculate' button:</p>
-<form method="post" action=".">
-	{% csrf_token %}
-	{{ formset.management_form }}
-	<table>
-		{% for form in formset %}
-	  	{{ form.name}}
-	  	<label>{{ form.name.value}}</label>
+	<strong>Data to analyze:</strong>
+	{% for stash in newestStashesGroup %}
+		<div class="stash">
+			{{stash.date}} {{stash.name}} {{stash.amount}}
 			<br>
-			{{form.amount}}
+		</div>
+	{% endfor %}
+	<p>Total sum: {{totalAmount}}</p>
+	<strong>{{messagePrevious}}</strong>
+	{% for stash in newestPreviousGroup %}
+		<div class="stash">
+			{{stash.date}} {{stash.name}} {{stash.amount}}
 			<br>
-			<br>
-		{% endfor %}
-	</table>
-	<input type="submit" value="Calculate">
-</form>
-
-{{afterCostsMessage}}
-
-<br>
-<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+		</div>
+	{% endfor %}
+	<p>{{previousTotalStatement}}</p>
+	<p>{{messageGain}}</p>
+	{% for string in monthlyCostsStrings %}
+	{{string}}
+	<br>
+	{% endfor %}
+	<br>
+	<strong>To check your current total costs and how much you will have after expenses</strong><br>
+	<strong>write how much you will spend in each costs group and hit 'Calculate' button:</strong>
+	<form method="post" action=".">
+		{% csrf_token %}
+		{{ formset.management_form }}
+		<table>
+			{% for form in formset %}
+			{{ form.name}}
+			<label>{{ form.name.value}}</label>
+				<br>
+				{{form.amount}}
+				<br>
+				<br>
+			{% endfor %}
+		</table>
+		<input type="submit" value="Calculate">
+	</form>
+	{{afterCostsMessage}}
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

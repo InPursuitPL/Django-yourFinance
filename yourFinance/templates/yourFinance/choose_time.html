@@ -3,9 +3,10 @@
 	{{ templateText }}
 	<p>Dates should be in format yyyy-mm-dd</p>
 	<form method="post" action=".">
-	{% csrf_token %}
-	{{ form }}
-	<input type="submit" value={{ buttonName }} />
-</form>
-<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+		{% csrf_token %}
+		{{ form }}
+		<input type="submit" value={{ buttonName }} />
+	</form>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

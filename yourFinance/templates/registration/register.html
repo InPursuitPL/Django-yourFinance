@@ -1,13 +1,16 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-{% if user.is_authenticated %}
-	<p>Logged user can not register.</p>
-	<button type="button"><a href="{% url 'index' %}">Main page</a></button>
-{% else %}
-	<form method="post" action=".">
-	{% csrf_token %}
-	{{ form.as_p }}
-	<input type="submit" value="Register" />
-	</form>
-{% endif %}
+	{% if user.is_authenticated %}
+		<p>Logged user can not register.</p>
+		<br>
+		<a href="{% url 'index' %}" class="button">Back to main page</a>
+	{% else %}
+		<form method="post" action=".">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Register" />
+		</form>
+		<br>
+		<a href="{% url 'index' %}" class="button">Back to main page</a>
+	{% endif %}
 {% endblock content %}

@@ -1,12 +1,13 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-<p> Here you can change amounts in your monthly cost groups.</p>
-<form method="post" action=".">
-	{% csrf_token %}
-	<table>
-	{{form.as_table}}
-	</table>
-	<input type="submit" value="Save" />
-</form>
-<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+	<p> Here you can change amounts in your monthly cost groups.</p>
+	<form method="post" action=".">
+		{% csrf_token %}
+		<table>
+		{{form.as_table}}
+		</table>
+		<input type="submit" value="Save" />
+	</form>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

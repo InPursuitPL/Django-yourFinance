@@ -305,13 +305,13 @@ def analyze_record(request, date):
         cost_groups_formset = CostGroupsFormSet(request.POST)
         if cost_groups_formset.is_valid():
             totalCosts = 0
-            totalAmountAfterExpenses = totalAmount
+            totalAmountAfterExpenses = float(totalAmount)
             for dictionary in cost_groups_formset.cleaned_data:
                 totalCosts += dictionary['amount']
                 totalAmountAfterExpenses -= dictionary['amount']
             afterCostsMessage = 'Your total current costs are {},' \
                                 ' after expenses you will have {}.' \
-                .format(totalCosts, totalAmountAfterExpenses)
+                .format(round(totalCosts, 2), round(totalAmountAfterExpenses, 2))
     else:
         cost_groups_formset = CostGroupsFormSet(
             initial=make_initial_list('name', userProfile.costNames)

@@ -1,11 +1,12 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-{{message}}
-<p>Date should be in format yyyy-mm-dd</p>
-<form method="post">
-	{% csrf_token %}
-	{{ form.as_p }}
-	<input type="submit" value="Save" />
-</form>
-<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+	{{message}}
+	<p>Date should be in format yyyy-mm-dd</p>
+	<form method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Save" />
+	</form>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

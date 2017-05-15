@@ -33,13 +33,6 @@ a.button {
 	right: 1%;
 }
 
-
-.imgLinks a:hover {
-			background: white;
-			box-shadow: 0 0 100px 50px rgba(30,144,255,.5);
-			opacity: 1;
-		}
-
 #profile {
 	text-align: right;
 	border: 1px solid silver;

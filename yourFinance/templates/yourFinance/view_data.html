@@ -5,24 +5,29 @@
 			<tr>
 			{% for listOfStashesOrTotal in listOfLists %}
 				<td>
+				<table>
 				{% for element in listOfStashesOrTotal %}
 					{% if element.date %}
 						<div class="stash">
-							{{element.date}} {{element.name}} {{element.amount}} 
-							<a href="{% url 'data edit' element.id %}">edit</a>
-							<a href="{% url 'data delete' element.id %}">delete</a>
-							<br>
+							<tr>
+							<td>{{element.date}}</td>
+							<td>{{element.name}}</td>
+							<td><strong>{{element.amount}} </strong></td>
+							<td><a href="{% url 'data edit' element.id %}">edit</a></td>
+							<td><a href="{% url 'data delete' element.id %}">delete</a></td>
 						</div>
 					{% else %}
 						<p>{{ element }}</p>
 					{% endif %}
 				{% endfor %}
+				</tr>
+				</table>
 				<br>
 				</td>
 			{% endfor %}
 			</tr>
 		{% endfor %}
 		</table>
-	
-	<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

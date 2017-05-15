@@ -1,8 +1,9 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-<form method="post">{% csrf_token %}
-    Are you sure you want to delete data?
-    <input type="submit" value="Submit" />
-</form>
-<button type="button"><a href="{% url 'index' %}">Back to main page.</a></button>
+	<form method="post">{% csrf_token %}
+		<p>Are you sure you want to delete data?</p>
+		<input type="submit" value="Submit" />
+	</form>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

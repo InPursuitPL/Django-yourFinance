@@ -1,6 +1,6 @@
  {% extends 'yourFinance/base.html' %}
 {% block content %}
- <p> {{user}} has been registered.</p>
-
-<button type="button"><a href="{% url 'index' %}">Main page</a></button>
+	 <strong class="successMessage"> {{user}} has been registered.</strong>
+	<br>
+	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}
