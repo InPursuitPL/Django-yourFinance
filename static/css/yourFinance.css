@@ -12,6 +12,10 @@ a {
     color: grey;
 }
 
+.viewTable {
+	border: 1px solid lightgrey;
+}
+
 a.button {
     -webkit-appearance: button;
     -moz-appearance: button;

@@ -1,11 +1,11 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
-		<table>
+		<table class="viewTable">
 		{% for listOfLists in stashes_groups_and_totals %}
 			<tr>
 			{% for listOfStashesOrTotal in listOfLists %}
 				<td>
-				<table>
+				<table class="viewTable">
 				{% for element in listOfStashesOrTotal %}
 					{% if element.date %}
 						<div class="stash">
