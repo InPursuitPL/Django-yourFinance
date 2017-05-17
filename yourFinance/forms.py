@@ -34,7 +34,7 @@ class StashForm(forms.ModelForm):
 class MonthlyCostsForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('existenceLevel', 'minimalLevel', 'standardLevel')
+        fields = ('basicLevel', 'mediumLevel', 'standardLevel')
 
 
 class CostGroupsForm(forms.Form):

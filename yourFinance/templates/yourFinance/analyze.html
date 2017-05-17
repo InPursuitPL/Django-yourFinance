@@ -1,5 +1,8 @@
 {% extends 'yourFinance/base.html' %}
 {% block content %}
+<table>
+	<tr>
+	<td>
 	<strong>Data to analyze:</strong>
 	{% for stash in newestStashesGroup %}
 		<div class="stash">
@@ -17,29 +20,40 @@
 	{% endfor %}
 	<p>{{previousTotalStatement}}</p>
 	<p>{{messageGain}}</p>
+	<p>Your current sum is enough for:</p>
 	{% for string in monthlyCostsStrings %}
 	{{string}}
 	<br>
 	{% endfor %}
 	<br>
-	<strong>To check your current total costs and how much you will have after expenses</strong><br>
-	<strong>write how much you will spend in each costs group and hit 'Calculate' button:</strong>
+	</td>
+	<td id="calculateCosts">
+	<p>To check your current total costs and how much you</p>
+	<p>will have after expenses write how much you will</p>
+	<p>spend in each costs group and hit 'Calculate' button:</p>
 	<form method="post" action=".">
 		{% csrf_token %}
 		{{ formset.management_form }}
 		<table>
 			{% for form in formset %}
-			{{ form.name}}
-			<label>{{ form.name.value}}</label>
-				<br>
-				{{form.amount}}
-				<br>
-				<br>
+				{{ form.name}}
+				<tr>
+					<td>
+						<label>{{ form.name.value}}</label>
+					</td>
+					<td>
+						{{form.amount}}
+						<br>
+					</td>
+				</tr>
 			{% endfor %}
 		</table>
 		<input type="submit" value="Calculate">
 	</form>
-	{{afterCostsMessage}}
+	<strong>{{afterCostsMessage}}</strong>
 	<br>
+	</td>
+	</tr>
+</table>
 	<a href="{% url 'index' %}" class="button">Back to main page</a>
 {% endblock content %}

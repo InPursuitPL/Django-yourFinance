@@ -54,6 +54,10 @@ a.button {
 	font-weight: bold;
 }
 
+#calculateCosts {
+	float: right;
+	margin-left: 20px;
+
 #menu {
 	float: right;
 	margin: 20px;

@@ -17,11 +17,11 @@ class Profile(models.Model):
     stashNames = models.TextField(default='Bank account\nSavings\nWallet\nOthers\n')
     costNames = models.TextField(default='Rent and other charges\nTransportation\n'
                                          'Clothes\nFood\nHobby\nOthers\n')
-    existenceLevel = models.DecimalField(verbose_name='Existence level monthly cost',
+    basicLevel = models.DecimalField(verbose_name='Basic level monthly cost',
                                          default=1500.00,
                                          max_digits=8,
                                          decimal_places=2)
-    minimalLevel = models.DecimalField(verbose_name='Minimal level monthly cost',
+    mediumLevel = models.DecimalField(verbose_name='Medium level monthly cost',
                                        default=2000.00,
                                        max_digits=8,
                                        decimal_places=2)

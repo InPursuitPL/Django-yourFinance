@@ -272,7 +272,7 @@ def analyze_record(request, date):
     if len(previousStashes) > 0:
         arePrevious = True
         messagePrevious = 'Data from previous record: '
-        (newestPreviousGroup,
+        (previousStashesGroup,
          previousTotalAmount,
          previousStashesDate) = _give_newest_and_total_and_date(previousStashes)
         previousTotalStatement = 'Total sum: {}'.format(previousTotalAmount)
@@ -287,12 +287,12 @@ def analyze_record(request, date):
         messagePrevious = 'No previous data in database.'
 
     # Part to analyze for how long current sum will be enough.
-    monthlyCostsList = [(userProfile.existenceLevel, 'existence level'),
-                        (userProfile.minimalLevel, 'minimal level'),
+    monthlyCostsList = [(userProfile.basicLevel, 'basic level'),
+                        (userProfile.mediumLevel, 'medium level'),
                         (userProfile.standardLevel, 'standard level')]
     monthlyCostsStrings = []
     for amount in monthlyCostsList:
-        monthlyCostsStrings.append('Your current sum is enough for {} months'
+        monthlyCostsStrings.append('{} months'
                                    ' based on {} amount of {}.'.format(
             round(totalAmount / amount[0], 1),
             amount[0],
@@ -309,8 +309,8 @@ def analyze_record(request, date):
             for dictionary in cost_groups_formset.cleaned_data:
                 totalCosts += dictionary['amount']
                 totalAmountAfterExpenses -= dictionary['amount']
-            afterCostsMessage = 'Your total current costs are {},' \
-                                ' after expenses you will have {}.' \
+            afterCostsMessage = 'Total current costs: {}.' \
+                                ' Amount after expenses: {}' \
                 .format(round(totalCosts, 2), round(totalAmountAfterExpenses, 2))
     else:
         cost_groups_formset = CostGroupsFormSet(
@@ -326,7 +326,7 @@ def analyze_record(request, date):
                     }
     # Added only if there were previous data before newest/required ones.
     if arePrevious:
-        templateDict['newestPreviousGroup'] = newestPreviousGroup
+        templateDict['newestPreviousGroup'] = previousStashesGroup
         templateDict['previousTotalStatement'] = previousTotalStatement
         templateDict['messageGain'] = messageGain
 
@@ -363,11 +363,10 @@ def configure_monthly_costs(request):
     if request.method == 'POST':
         form = MonthlyCostsForm(request.POST)
         if form.is_valid():
-            userProfile.existenceLevel = form.cleaned_data['existenceLevel']
-            userProfile.minimalLevel = form.cleaned_data['minimalLevel']
+            userProfile.basicLevel = form.cleaned_data['basicLevel']
+            userProfile.mediumLevel = form.cleaned_data['mediumLevel']
             userProfile.standardLevel = form.cleaned_data['standardLevel']
             userProfile.save()
-            print(userProfile.existenceLevel)
             return render(request, 'yourFinance/success.html')
     form = MonthlyCostsForm(instance=userProfile)
     return render(request,
