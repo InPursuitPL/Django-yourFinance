@@ -40,9 +40,8 @@ class ViewDataTestCase(TestCase):
                              date= '2001-01-01', amount= 1500)
         response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.context['stashes_groups_and_totals']),
-                         "[[[<Stash: Bank account 2001-01-01 1500.00>], "
-                         "['Total amount for 2001-01-01: 1500.00']]]")
+        self.assertEqual(str(response.context['stashes_groups_and_totals'][0][0]),
+                         '[<Stash: Bank account 2001-01-01 1500.00>]')
 
 
 class DeleteDataTestCase(TestCase):
@@ -56,17 +55,17 @@ class DeleteDataTestCase(TestCase):
     def test_delete_data(self):
         # Creates two stash objects for different dates.
         Stash.objects.create(user=self.user, name='Bank account',
-                             date='2001-01-01', amount=1500)
+                             date='2001-01-01', amount=1800)
         Stash.objects.create(user=self.user, name='Bank account',
                              date='2002-02-02', amount=2500)
         # Asserts two objects are visible in view data.
         response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.context['stashes_groups_and_totals']),
-                         "[[[<Stash: Bank account 2001-01-01 1500.00>], "
-                         "['Total amount for 2001-01-01: 1500.00']], "
-                         "[[<Stash: Bank account 2002-02-02 2500.00>], "
-                         "['Total amount for 2002-02-02: 2500.00']]]")
+        self.assertEqual(len(response.context['stashes_groups_and_totals']), 2)
+        self.assertEqual(str(response.context['stashes_groups_and_totals'][0][0]),
+                         '[<Stash: Bank account 2001-01-01 1800.00>]')
+        self.assertEqual(str(response.context['stashes_groups_and_totals'][1][0]),
+                         '[<Stash: Bank account 2002-02-02 2500.00>]')
         # Deletes one of stash objects.
         response = self.client.post('/delete_multiple_data/',
                                     {'startDate': '2002-02-02', 'endDate': '2002-02-02'})
@@ -74,9 +73,10 @@ class DeleteDataTestCase(TestCase):
         # Asserts only one object is left in view data.
         response = self.client.post('/view_data/', {'startDate': '', 'endDate': ''})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.context['stashes_groups_and_totals']),
-                         "[[[<Stash: Bank account 2001-01-01 1500.00>], "
-                         "['Total amount for 2001-01-01: 1500.00']]]")
+        self.assertEqual(len(response.context['stashes_groups_and_totals']), 1)
+        self.assertEqual(str(response.context['stashes_groups_and_totals'][0][0]),
+                         '[<Stash: Bank account 2001-01-01 1800.00>]')
+
 
 class AnalyzeDataTestCase(TestCase):
     """Tests for analyze data functionality."""
@@ -88,7 +88,6 @@ class AnalyzeDataTestCase(TestCase):
 
     def test_analyze_data_when_empty(self):
         response = self.client.get('/9999-12-31/analyze_record/')
-        print(response.context)
         self.assertContains(response, 'No data to analyze!')
 
     def test_analyze_data(self):

@@ -18,6 +18,7 @@
 						</div>
 					{% else %}
 						<p>{{ element }}</p>
+						<a href="{% url 'group delete' element.stashes_date %}">delete group</a>
 					{% endif %}
 				{% endfor %}
 				</tr>

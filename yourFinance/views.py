@@ -110,14 +110,23 @@ def stashes_with_total_amounts(stashesList):
     Helper function to format output for view_data with
     stashes groups and total amounts for each group.
     """
+    # Creates object because template will use its stashes_date argument
+    # for group_delete view link and its __str__ method to show information.
+    class Container:
+        def __init__(self, stashes_date, total_amount):
+            self.stashes_date = stashes_date
+            self.total_amount = total_amount
+        def __str__(self):
+            return 'Total amount for {}: {}'.format(self.stashes_date,
+                                                    self.total_amount)
     nested_list = []
     stashes_group_list = []
     total_amount = 0
     # Output is in the format [[
     # [stash1, stash2, ...],
-    # [string_with_date_and_amount_for_preceding_group,]],
+    # [Container_object_with_date_and_amount_for_preceding_group,]],
     # [[stash4, stash5, ...],
-    # [string,]],  ... ]
+    # [Container_object,]],  ... ]
     for stash in stashesList:
         stashes_group_list.append(stash)
         total_amount += stash.amount
@@ -127,9 +136,8 @@ def stashes_with_total_amounts(stashesList):
             stashes_and_total_list = []
             stashes_and_total_list.append(stashes_group_list)
             stashes_group_list = []
-            group_string = 'Total amount for {}: {}'.format(stashes_date,
-                                                            total_amount)
-            stashes_and_total_list.append([group_string, ])
+            group_element = Container(stashes_date, total_amount)
+            stashes_and_total_list.append([group_element, ])
             nested_list.append(stashes_and_total_list)
             total_amount = 0
     return nested_list
@@ -179,6 +187,12 @@ def data_edit(request, pk):
     """Edit single Stash entry."""
     message = 'Here you can edit chosen data.'
     stash = get_object_or_404(Stash, pk=pk)
+    # Forbids other users to see and edit someones stash
+    # by manually providing certain url.
+    if stash.user != request.user:
+        message = 'Access denied!'
+        return render(request, 'yourFinance/failure.html',
+                      {'templateText': message})
     # I've used here 'Easy Form Views Pattern' just to test it but i will
     # not change other views to it, as there are some edge cases where this
     # pattern will fail in an unexpected way. Explicit form seems also to
@@ -195,10 +209,28 @@ def data_edit(request, pk):
 def data_delete(request, pk):
     """Delete single Stash entry."""
     stash = get_object_or_404(Stash, pk=pk)
+    # Forbids other users to see and delete someones stash
+    # by manually providing certain url.
+    if stash.user != request.user:
+        message = 'Access denied!'
+        return render(request, 'yourFinance/failure.html',
+                      {'templateText': message})
     if request.method == 'POST':
         stash.delete()
         return render(request, 'yourFinance/success.html')
     return render(request, 'yourFinance/confirm_delete.html')
+
+@login_required
+def group_delete(request, date):
+    """Deletes stashes group for given date."""
+    stashes = Stash.objects.filter(user=request.user,
+                date=date)
+    if request.method == 'POST':
+        for stash in stashes:
+            stash.delete()
+        return render(request, 'yourFinance/success.html')
+    return render(request, 'yourFinance/confirm_delete.html',
+                  {'stashes': stashes})
 
 @login_required
 def delete_multiple_data(request):
@@ -354,26 +386,6 @@ def configure_deposition_places(request):
                   {'formset': formset})
 
 @login_required
-def configure_monthly_costs(request):
-    """
-    Enables configuring user monthly cost fields,
-    stored in Profile model.
-    """
-    userProfile = Profile.objects.get(user=request.user)
-    if request.method == 'POST':
-        form = MonthlyCostsForm(request.POST)
-        if form.is_valid():
-            userProfile.basicLevel = form.cleaned_data['basicLevel']
-            userProfile.mediumLevel = form.cleaned_data['mediumLevel']
-            userProfile.standardLevel = form.cleaned_data['standardLevel']
-            userProfile.save()
-            return render(request, 'yourFinance/success.html')
-    form = MonthlyCostsForm(instance=userProfile)
-    return render(request,
-                  'yourFinance/configure_monthly_costs.html',
-                  {'form': form})
-
-@login_required
 def configure_cost_groups(request):
     """Enables configuring user costNames field, stored in Profile model."""
     userProfile = Profile.objects.get(user=request.user)
@@ -393,3 +405,23 @@ def configure_cost_groups(request):
     )
     return render(request, 'yourFinance/configure_names.html',
                   {'formset': formset})
+
+@login_required
+def configure_monthly_costs(request):
+    """
+    Enables configuring user monthly cost fields,
+    stored in Profile model.
+    """
+    userProfile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = MonthlyCostsForm(request.POST)
+        if form.is_valid():
+            userProfile.basicLevel = form.cleaned_data['basicLevel']
+            userProfile.mediumLevel = form.cleaned_data['mediumLevel']
+            userProfile.standardLevel = form.cleaned_data['standardLevel']
+            userProfile.save()
+            return render(request, 'yourFinance/success.html')
+    form = MonthlyCostsForm(instance=userProfile)
+    return render(request,
+                  'yourFinance/configure_monthly_costs.html',
+                  {'form': form})
