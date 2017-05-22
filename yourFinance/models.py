@@ -29,6 +29,10 @@ class Profile(models.Model):
                                         default=3000.00,
                                         max_digits=8,
                                         decimal_places=2)
+    
+    def __str__(self):
+        return "{}'s profile".format(self.user)
+    
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
