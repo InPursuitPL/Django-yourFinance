@@ -5,6 +5,8 @@
 		{% load staticfiles %}
 		<link rel="stylesheet" href="{% static 'css/yourFinance.css' %}">
 		<!--[if IE]><link rel="stylesheet" href="{% static 'css/yourFinanceIE.css' %}><![endif]-->
+		<script src='https://code.jquery.com/jquery-3.1.0.min.js'></script>
+		<script src={% static 'js/main.js' %}></script>
 	</head>
 	<body>
 		<p id="logo"><a href="{% url 'index' %}"><img src="{% static 'logo.jpg' %}" alt="logo"></a></p>
@@ -24,15 +26,18 @@
 		</div>
 	<nav id="menu">
 		<a href="{% url 'index' %}">Back to main page</a><br>
-		<p>Data options:</p>
+		<p>Data options</p>
 		<a href="{% url 'add data' %}">Add new data</a><br>
 		<a href="{% url 'view data' %}">View/edit/delete data</a><br>
 		<a href="{% url 'delete multiple data' %}">Delete multiple data</a><br>
 		<a href="{% url 'analyze data' %}">Analyze data</a></button><br>
-		<p>Configure settings:</p>
-		<a href="{% url 'configure deposition places' %}">money deposition places</a><br>
-		<a href="{% url 'configure monthly costs' %}">monthly costs amounts</a><br>
-		<a href="{% url 'configure cost groups' %}">current costs groups</a>
+		<br>
+		<div class="configureButton">Configure settings</div>
+		<div id="configureLinks">
+			<a href="{% url 'configure deposition places' %}">deposition places</a><br>
+			<a href="{% url 'configure monthly costs' %}">costs levels</a><br>
+			<a href="{% url 'configure cost groups' %}">current costs groups</a>
+		</div>
 	</nav>
 	<p id="inPursuitLink" class="imgLinks"><a href="http://www.inpursuit.pl/"><img src="{% static 'inpursuit.png' %}" alt="inpursuit.pl"></a></p>
 	<p id="gitLink" class="imgLinks"><a href="https://github.com/InPursuitPL/Django-yourFinance"><img src="{% static 'github.png' %}" alt="GitHub"></a></p>
