@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory, formset_factory
@@ -47,6 +48,18 @@ def _give_newest_and_total_and_date(objects):
 
 def index(request):
     return render(request, 'yourFinance/index.html')
+
+def sample_user_login(request):
+    """Logs in sampleUser if exists"""
+    username = 'sampleUser'
+    password = 'justanexample'
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return render(request, 'yourFinance/index.html')
+    templateText = 'There is no sample user yet!'
+    return render(request, 'yourFinance/failure.html', {'templateText': templateText})
+
 
 def register_page(request):
     """Page for new user registration."""

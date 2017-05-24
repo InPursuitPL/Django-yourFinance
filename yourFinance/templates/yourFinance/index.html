@@ -9,4 +9,10 @@
 		and other information.</p>
 	<br>
 	<strong>Check right side menu for options.</strong>
+	{% if not user.is_authenticated %}
+		<br>
+		<br>
+		<p>Do you want to check how it works? <a href="{% url 'sample user login' %}">Click here</a>
+		to log in as a sample user and try it.</p>
+	{% endif %}
 {% endblock content %}
